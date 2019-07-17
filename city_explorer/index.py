@@ -19,14 +19,16 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         print('parsed query', parsed_qs)
         
         if parsed_path.path == '/locations':
-            # self.send_response(200)
-            # self.send_header('Content-type', 'application/json')
-            # self.end_headers()
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
 
-            query = parsed_qs['search_query'] #the searched item
+            query = parsed_qs['search_query'] 
+            
             url = f'https://maps.googleapis.com/maps/api/geocode/json?address={query}&key={GOOGLE_API_KEY}'
             print('The URL is ', url)
 
+            #get it back as json
             result = requests.get(url).json()
             
             self.formatted_query = result['results'][0]['formatted_address']
@@ -59,3 +61,4 @@ def run_forever():
 
 if __name__ == "__main__":
     run_forever()
+
