@@ -10,15 +10,13 @@ CORS(app)
 
 @app.route('/location')
 def location():
-    
     query = request.args.get('data')
-
     api_key = environ.get('GEOCODE_API_KEY')
-
     url = f'https://maps.googleapis.com/maps/api/geocode/json?address={query}&key={api_key}'
+    # https://maps.googleapis.com/maps/api/geocode/json?address=barcelona&key=API_KEY
 
     result = requests.get(url).json()
-    
+
     formatted_query = result['results'][0]['formatted_address']
     latitude = result['results'][0]['geometry']['location']['lat']
     longitude = result['results'][0]['geometry']['location']['lng']
@@ -27,12 +25,17 @@ def location():
 
 @app.route('/weather')
 def weather():
+    
+    api_key = environ.get('WEATHER_API_KEY')
+    url = f'https://api.darksky.net/forecast/{api_key}/{latitude},{longitude}'
+    #https://api.darksky.net/forecast/WEATHER_API_KEY/41.3850639,2.1734035
 
-    # url will pass funny looking query string like below
-    # actually passes more keys/values but lat/long are the ones we need 
-    # http://localhost:5000/weather?data[latitude]=41.3850639&data[longitude]=2.1734035
+    forecasts = requests.get(url).json()
+
+    daily_weather = [Forecast(daily).serialize()
+                for daily in forecasts['daily']['data']]
 
     latitude = request.args['data[latitude]']
     longitude = request.args['data[longitude]']
-
-    return Forecast.fetch(latitude, longitude)
+    
+    return json.dumps(daily_weather)
