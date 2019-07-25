@@ -14,10 +14,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         # breakpoint()
         parsed_path = urlparse(self.path)
-        print('request path', parsed_path.path)
-
         parsed_qs = parse_qs(parsed_path.query)
-        print('parsed query', parsed_qs)
 
         if parsed_path.path == '/locations':
             self.send_response(200)
@@ -29,9 +26,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             key = os.environ.get('GEOCODE_API_KEY')
 
             url = f'https://maps.googleapis.com/maps/api/geocode/json?address={query}&key={key}'
-            print('The URL is ', url)
 
-            #get it back as json
             result = requests.get(url).json()
 
             self.formatted_query = result['results'][0]['formatted_address']
@@ -40,6 +35,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
             json_string = json.dumps(result)
             self.wfile.write(json_string.encode())
+
             return
 
         self.send_response_only(404)
@@ -61,6 +57,7 @@ def run_forever():
         server.server_close()
         server.shutdown()
         print('Ended server.')
+
 
 if __name__ == "__main__":
     run_forever()
