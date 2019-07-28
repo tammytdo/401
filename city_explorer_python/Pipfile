@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+
+[packages]
+python-dotenv = "*"
+requests = "*"
+pytest = "*"
+flask = "*"
+flask-cors = "*"
+sqlalchemy = "*"
+flask-migrate = "*"
+
+[requires]
+python_version = "3.7"
