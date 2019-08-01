@@ -1,35 +1,59 @@
 import json
 
-def test_get_no_brands(client):
-    res = client.get("/brands")
+
+def test_get_no_chocolates(client):
+    res = client.get("/chocolates")
     assert res.status_code == 200
     assert json.loads(res.data.decode()) == []
 
-def test_sample_brand_fixture(sample_brand):
-    assert sample_brand.id == 1
-    assert sample_brand.name == "Kit Kat"
-
-def test_solo_brand_fixture(solo_artist):
-    assert sample_brand2.id == 1
-    assert sample_brand2.name == "Lindt"
-
-def test_create_brand_with_band(client, sample_band):
-    brand_info = {"name": "Kit Kat", "band": sample_band.id}
-    res = client.post("/brands", data=brand_info)
+def test_create_chocolate(client):
+    res = client.post("/chocolates", data={"name": "Kit Kat"})
     assert res.status_code == 200
 
-def test_create_solo_brand(client):
-    brand_info = {"name": "Lindt"}
-    res = client.post("/brands", data=brand_info)
+def test_sample_chocolate(sample_chocolate):
+    assert sample_chocolate.id == 1
+    assert sample_chocolate.name == "Kit Kat"
+
+def test_get_chocolate_by_id(client, sample_chocolate):
+    res = client.get(f"/chocolates/{sample_chocolate.id}")
+    chocolate_dict = json.loads(res.data.decode())
+    assert chocolate_dict["name"] == "Kit Kat"
+
+def test_create_chocolate_and_check(client):
+    client.post("/chocolates", data = {"name": "Kit Kat"})
+    res = client.get("/chocolates")
+    chocolates = json.loads(res.data.decode())
+    assert len(chocolates) == 1
+    assert chocolates[0]["name"] == "Kit Kat"
+
+def test_create_chocolate_and_fetch(client, sample_chocolate):
+    res = client.get(f"/chocolates/{sample_chocolate.id}")
     assert res.status_code == 200
 
-    res = client.get("/brands")
-    brands = json.loads(res.data.decode())
-    assert len(brands) == 1
-    assert brands[0]['name'] == "Lindt"
-    assert brands[0].get('band') is None
+    chocolate_dict = json.loads(res.data.decode())
+    assert chocolate_dict["name"] == "Kit Kat"
 
-def test_get_one_brand(client, sample_brand):
-    res = client.get(f"/brands/{sample_brand.id}")
-    brand_dict = json.loads(res.data.decode())
-    assert brand_dict["name"] == "Kit Kat"
+def test_update_chocolate(client, sample_chocolate):
+    res = client.put(f"/chocolates/{sample_chocolate.id}", data = {"name": "Not Kit Kat"})
+    assert res.status_code == 200
+    assert json.loads(res.data.decode()) == sample_chocolate.id
+
+    res = client.get(f"/chocolates/{sample_chocolate.id}")
+    chocolate_dict = json.loads(res.data.decode())
+    assert chocolate_dict["name"] == "Not Kit Kat"
+
+def test_get_chocolate_with_wines(client, sample_wine):
+    res = client.get(f"/chocolates/{sample_wine.chocolate_id}")
+    chocolate_dict = json.loads(res.data.decode())
+    assert chocolate_dict["wines"][0]["name"] == "Syrah"
+
+def test_delete_chocolate(client, sample_chocolate):
+    res = client.delete(f"/chocolates/{sample_chocolate.id}")
+    assert res.status_code == 200
+
+def test_get_chocolate_by_name(client, sample_chocolate):
+    res = client.get("/chocolates/Kit Kat")
+    assert res.status_code == 200
+    
+    chocolate_dict = json.loads(res.data.decode())
+    assert chocolate_dict["name"] == "Kit Kat"
