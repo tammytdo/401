@@ -21,8 +21,6 @@ def test_wine_in_chocolate(client):
     assert Chocolate.query.first().name == "M&Ms"
     assert Wine.query.first().name == "Pinot Noir"
     
-    # hmmm, adding wine with associated chocolate does not require
-    # the chocolate to be added to session
     wines_in_chocolate = Chocolate.query.first().wines
     assert wines_in_chocolate[0].name == "Pinot Noir"
     assert wines_in_chocolate[0].chocolate.name == "M&Ms"
